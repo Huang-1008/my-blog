@@ -1,0 +1,13 @@
+{
+  "name": "live-preview-server",
+  "version": "1.0.0",
+  "description": "轻量级实时预览服务器 - 文件变更自动刷新浏览器",
+  "main": "live-server.js",
+  "scripts": {
+    "preview": "node live-server.js",
+    "start": "node live-server.js"
+  },
+  "dependencies": {
+    "ws": "^8.21.0"
+  }
+}

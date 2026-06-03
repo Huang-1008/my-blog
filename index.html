@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>个人博客 — 技术分享与项目展示</title>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="style.css">
+  <!-- highlight.js 主题 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css" id="hljs-theme">
+</head>
+<body>
+
+  <!-- ===== 导航栏 ===== -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#/" class="nav-logo" data-link>🏠 主页</a>
+      <div class="nav-links">
+        <a href="#/" class="nav-link active" data-link>首页</a>
+        <a href="#/blog" class="nav-link" data-link>博客</a>
+        <a href="#/projects" class="nav-link" data-link>项目</a>
+        <a href="#/about" class="nav-link" data-link>关于</a>
+      </div>
+      <div class="nav-actions">
+        <button class="btn-icon" id="themeToggle" title="切换主题" aria-label="切换主题">🌙</button>
+        <button class="btn-icon" id="searchBtn" title="搜索 (Ctrl+K)" aria-label="搜索">🔍</button>
+        <button class="btn-icon hamburger" id="hamburger" aria-label="菜单">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== 搜索弹窗 ===== -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-modal">
+      <input type="text" class="search-input" id="searchInput" placeholder="搜索文章... (Esc 关闭)">
+      <div class="search-results" id="searchResults"></div>
+    </div>
+  </div>
+
+  <!-- ===== 主内容区 ===== -->
+  <main id="app"></main>
+
+  <!-- ===== 返回顶部 ===== -->
+  <button class="back-to-top" id="backToTop" title="返回顶部" aria-label="返回顶部">↑</button>
+
+  <!-- ===== Toast 通知 ===== -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ===== 阅读进度条 ===== -->
+  <div class="reading-progress" id="readingProgress"></div>
+
+  <!-- ===== 模板 ===== -->
+
+  <!-- 首页模板 -->
+  <template id="tpl-home">
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <div class="avatar" id="heroAvatar">
+          <img src="https://github.com/identicons/placeholder.png" alt="头像" id="avatarImg">
+        </div>
+        <h1 class="hero-title">
+          <span class="typewriter" id="typewriter"></span>
+          <span class="cursor">|</span>
+        </h1>
+        <p class="hero-desc" id="heroDesc">热爱技术，热爱开源，专注全栈开发与系统设计</p>
+        <div class="hero-social" id="heroSocial">
+          <a href="https://github.com/placeholder" target="_blank" class="social-link" title="GitHub">
+            <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-bar" id="statsBar">
+      <div class="stat-item">
+        <span class="stat-num" id="statRepos">0</span>
+        <span class="stat-label">仓库</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num" id="statStars">0</span>
+        <span class="stat-label">Stars</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num" id="statFollowers">0</span>
+        <span class="stat-label">关注者</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num" id="statPosts">0</span>
+        <span class="stat-label">文章</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">📝 最新文章</h2>
+        <a href="#/blog" class="section-more" data-link>查看全部 →</a>
+      </div>
+      <div class="post-grid" id="featuredPosts">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">🚀 精选项目</h2>
+        <a href="#/projects" class="section-more" data-link>查看全部 →</a>
+      </div>
+      <div class="repo-grid" id="featuredRepos">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+    </section>
+  </template>
+
+  <!-- 博客列表模板 -->
+  <template id="tpl-blog">
+    <section class="page-header">
+      <h1>📝 博客</h1>
+      <p>技术分享与学习笔记</p>
+    </section>
+    <div class="blog-toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input-inline" id="blogSearch" placeholder="搜索文章标题或内容...">
+      </div>
+      <div class="sort-tabs" id="blogSort">
+        <button class="sort-tab active" data-sort="newest">最新</button>
+        <button class="sort-tab" data-sort="oldest">最早</button>
+      </div>
+    </div>
+    <div class="tag-filter" id="tagFilter"></div>
+    <div class="post-list" id="postList">
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+    </div>
+    <div class="empty-state" id="blogEmpty" style="display:none">
+      <p>😕 没有找到匹配的文章</p>
+    </div>
+  </template>
+
+  <!-- 文章详情模板 -->
+  <template id="tpl-post">
+    <article class="post-detail">
+      <div class="post-header">
+        <a href="#/blog" class="back-link" data-link>← 返回博客列表</a>
+        <h1 class="post-title" id="postTitle"></h1>
+        <div class="post-meta">
+          <span class="post-date" id="postDate"></span>
+          <span class="post-readtime" id="postReadtime"></span>
+          <span class="post-tags" id="postTags"></span>
+        </div>
+      </div>
+      <div class="post-toc" id="postToc">
+        <h4>📑 目录</h4>
+        <nav id="tocNav"></nav>
+      </div>
+      <div class="post-content markdown-body" id="postContent"></div>
+    </article>
+  </template>
+
+  <!-- 项目展示模板 -->
+  <template id="tpl-projects">
+    <section class="page-header">
+      <h1>🚀 项目</h1>
+      <p>开源项目与代码仓库</p>
+    </section>
+    <div class="project-toolbar">
+      <div class="sort-tabs" id="projectSort">
+        <button class="sort-tab active" data-sort="stars">最多 Stars</button>
+        <button class="sort-tab" data-sort="updated">最近更新</button>
+        <button class="sort-tab" data-sort="name">名称排序</button>
+      </div>
+      <select class="lang-filter" id="langFilter">
+        <option value="">全部语言</option>
+      </select>
+    </div>
+    <div class="repo-grid full-grid" id="allRepos">
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+    </div>
+    <div class="empty-state" id="projectEmpty" style="display:none">
+      <p>😕 没有找到匹配的项目</p>
+    </div>
+  </template>
+
+  <!-- 关于我模板 -->
+  <template id="tpl-about">
+    <section class="page-header">
+      <h1>👋 关于我</h1>
+      <p>了解更多关于我的故事</p>
+    </section>
+    <div class="about-grid">
+      <div class="about-card">
+        <h3>💼 简介</h3>
+        <p id="aboutBio">一名热爱技术的全栈开发者，专注于 Web 开发和系统设计。喜欢开源，乐于分享。</p>
+      </div>
+      <div class="about-card">
+        <h3>🛠 技能</h3>
+        <div class="skills-cloud" id="skillsCloud">
+          <span class="skill-tag">JavaScript</span>
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">Node.js</span>
+          <span class="skill-tag">React</span>
+          <span class="skill-tag">Vue</span>
+          <span class="skill-tag">Git</span>
+          <span class="skill-tag">Docker</span>
+          <span class="skill-tag">MySQL</span>
+        </div>
+      </div>
+      <div class="about-card">
+        <h3>📬 联系方式</h3>
+        <div class="contact-list" id="contactList">
+          <a href="mailto:example@email.com" class="contact-item">📧 Email</a>
+          <a href="https://github.com/placeholder" target="_blank" class="contact-item">🐙 GitHub</a>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- 404 模板 -->
+  <template id="tpl-404">
+    <section class="page-404">
+      <h1>404</h1>
+      <p>页面未找到</p>
+      <a href="#/" class="btn" data-link>返回首页</a>
+    </section>
+  </template>
+
+  <!-- CDN 脚本 -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@11.2.0/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
